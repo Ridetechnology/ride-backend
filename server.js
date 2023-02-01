@@ -8,6 +8,7 @@ const cors = require("cors");
 const connectDB = require("./utils/database");
 // const timestamp = require('./src/utils/timestamp'); // use this for timestamp purpose - timestamp()
 
+
 // global variables
 const app = express();
 const port = process.env.PORT;
@@ -38,6 +39,8 @@ app.get("/", (req, res) => {
 // main routes
 
 app.use("/api/auth", require("./routers/auth"));
+app.use('/api/user', require("./routers/user"));
+
 
 // exposing the application
 app.listen(port, () => {

@@ -4,13 +4,18 @@ const bcrypt = require("bcryptjs");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  userName: { type: String, unique: true },
   firstName: { type: String },
   lastName: { type: String },
   email: { type: String, unique: true },
   userType: {
     type: String,
     enum: ["driver", "passenger"],
+  },
+  rides: {
+    type: Number,
+  },
+  route:{
+    type: String,
   },
   vehicleNo: {
     type: String,

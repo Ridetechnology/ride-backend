@@ -9,17 +9,15 @@ const { generateUserJwt } = require("../utils/userJwt");
 
 // validate player schema
 const userSchema = Joi.object().keys({
-  userName: Joi.string().required().min(4),
+  firstName: Joi.string().required().min(3),
+  lastName: Joi.string().required().min(3),
   phone: Joi.string().required().min(10).max(10),
-  email: Joi.string().email({ minDomainSegments: 2 }).required(),
-  addressLineOne: Joi.string(),
+  email: Joi.string().email({ minDomainSegments: 2 }),
   userType: Joi.string().required(),
-  addressLineTwo: Joi.string(),
-  city: Joi.string(),
-  state: Joi.string(),
-  pincode: Joi.string(),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
+  route: Joi.string(),
+  rides: Joi.number(),
 });
 
 // User registration
@@ -46,16 +44,6 @@ exports.signup = async (req, res) => {
       });
     }
 
-    // check if userName has been already registered
-    let username = await UserDataSets.findOne({
-      userName: user.value.userName,
-    });
-    if (username) {
-      return res.json({
-        error: true,
-        message: "This Username is already in use",
-      });
-    }
 
     // check if the phone number is already registered
     let phoneNumber = await UserDataSets.findOne({
