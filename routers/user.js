@@ -14,7 +14,7 @@ router.get(
   userController.getDriversByRoute
 );
 router.put(
-  "/updateDriverRoute",
+  "/updateDriverRoute/:id",
   auth.verifyTokenAndAuthorization,
   userController.updateDriverRoute
 );
