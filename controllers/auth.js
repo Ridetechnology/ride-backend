@@ -9,15 +9,12 @@ const { generateUserJwt } = require("../utils/userJwt");
 
 // validate player schema
 const userSchema = Joi.object().keys({
-  firstName: Joi.string().required().min(3),
-  lastName: Joi.string().required().min(3),
+  name: Joi.string().required().min(3),
   phone: Joi.string().required().min(10).max(10),
   email: Joi.string().email({ minDomainSegments: 2 }),
   userType: Joi.string().required(),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
-  route: Joi.string(),
-  rides: Joi.number(),
 });
 
 // User registration
@@ -43,7 +40,6 @@ exports.signup = async (req, res) => {
         message: "This Email is already in use",
       });
     }
-
 
     // check if the phone number is already registered
     let phoneNumber = await UserDataSets.findOne({
@@ -107,8 +103,8 @@ exports.signup = async (req, res) => {
 // player login with email and password
 exports.signin = async (req, res) => {
   try {
-    const { email, password, deviceToken } = req.body;
-    if (!email || !password) {
+    const { phone, password, deviceToken } = req.body;
+    if (!phone || !password) {
       return res.status(400).json({
         error: true,
         message: "Cannot authorize user.",
@@ -116,7 +112,7 @@ exports.signin = async (req, res) => {
     }
 
     //1. Find if any account with that email exists in DB
-    const user = await UserDataSets.findOne({ email: email });
+    const user = await UserDataSets.findOne({ phone: phone });
     // NOT FOUND - Throw error
     if (!user) {
       return res.status(404).json({
@@ -154,7 +150,7 @@ exports.signin = async (req, res) => {
 
     //Generate Access token
     const { error, token } = await generateUserJwt(
-      user.userName,
+      user.phone,
       user.email,
       user._id
     );
@@ -173,6 +169,7 @@ exports.signin = async (req, res) => {
       success: true,
       message: "User logged in successfully",
       accessToken: token, //Send it to the client
+      id: user._id,
     });
   } catch (error) {
     console.error("Login-error", error);

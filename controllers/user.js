@@ -1,54 +1,75 @@
-const user = require("../models/user")
-
+const user = require("../models/user");
 
 exports.getDriversByRoute = async (req, res) => {
-
-    try {
-        const drivers = await user.find({
-            userType: "driver",
-            route: req.query.route
-        });
-        res.json(drivers);
-
-    } catch (err) {
-        res.status(500).json({
-            message: 'Error getting drivers by route',
-            error: error.message
-        });
+  try {
+    const route = req.query.route;
+    const drivers = await user.find({
+      userType: "driver",
+      route: route,
+    });
+    if (!drivers) {
+      return res.status(404).json({
+        message: "Drivers not found",
+      });
+    } else {
+      return res.status(200).json({
+        drivers,
+      });
     }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
 
-}
+exports.updateDriverRoute = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const route = req.body.route;
 
-exports.getDriversById = async (req, res) => {
+    const driver = await user.findById(id);
+    if (!driver) return res.status(404).send("Driver not found");
 
-    const passengerId= req.body._id;
-    const driverId= req.body._id;
+    driver.route = route;
+    await driver.save();
+    return res.status(200).json({
+      message: "Driver Route Updated Successfully",
+      driver: driver,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
 
+exports.updateRides = async (req, res) => {
+  try {
+    const passengerId = req.body.passengerId;
+    const driverId = req.body.driverId;
 
+    const driver = await user.findById(driverId);
+    if (!driver) return res.status(404).send("Driver not found");
 
-    try {
+    const passenger = await user.findById(passengerId);
+    if (!passenger) return res.status(404).send("Passenger not found");
 
-        const driver = await user.findById(driverId);
-        if (!driver) return res.status(404).send("Driver not found");
+    driver.rides = driver.rides + 1;
+    await driver.save();
 
-        const passenger = await user.findById(passengerId);
-        if (!passenger) return res.status(404).send("Passenger not found");
+    passenger.rides = passenger.rides - 1;
+    await passenger.save();
 
-        driver.rides = driver.rides + 1;
-        await driver.save();
-
-        passenger.rides = passenger.rides - 1;
-        await passenger.save();
-
-        res.send("Rides updated successfully");
-
-
-    } catch (error) {
-        res.status(500).json({
-            message: 'Cannot Update Rides',
-            error: error.message
-        });
-    }
-
-}
-
+    return res.status(200).json({
+      message: "Rides updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Cannot Update Rides",
+      error: error.message,
+    });
+  }
+};
