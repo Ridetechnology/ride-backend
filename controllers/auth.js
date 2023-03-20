@@ -15,6 +15,7 @@ const userSchema = Joi.object().keys({
   userType: Joi.string().required(),
   password: Joi.string().required().min(4),
   vehicleNo: Joi.string(),
+  dlNo: Joi.string(),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
 });
 
@@ -85,6 +86,9 @@ exports.signup = async (req, res) => {
     // save the new player details to the db
     const newUser = new UserDataSets(user.value);
     //   newPlayer.otp = OTP;
+    if (newUser.userType === "passenger") {
+      newUser.rides = 100;
+    }
     await newUser.save();
     return res.status(200).json({
       status: "success",

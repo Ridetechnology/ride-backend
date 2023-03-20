@@ -20,6 +20,7 @@ const userSchema = new Schema({
     type: String,
   },
   phone: { type: String, unique: true },
+  dlNo: { type: String },
   addressLineOne: { type: String },
   addressLineTwo: { type: String },
   city: { type: String },
