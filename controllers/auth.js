@@ -88,6 +88,8 @@ exports.signup = async (req, res) => {
     //   newPlayer.otp = OTP;
     if (newUser.userType === "passenger") {
       newUser.rides = 100;
+    } else {
+      newUser.rides = 0;
     }
     await newUser.save();
     return res.status(200).json({
