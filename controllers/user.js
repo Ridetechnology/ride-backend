@@ -93,3 +93,22 @@ exports.updateUser = async (req, res) => {
     });
   }
 };
+
+exports.getUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userData = await user.findById(id);
+    if (!userData) {
+      return res.status(404).send("User not found");
+    } else {
+      return res.status(200).json({
+        user: userData,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Cannot Get User",
+      error: error.message,
+    });
+  }
+};
