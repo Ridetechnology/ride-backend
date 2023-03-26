@@ -87,7 +87,7 @@ exports.signup = async (req, res) => {
     const newUser = new UserDataSets(user.value);
     //   newPlayer.otp = OTP;
     if (newUser.userType === "passenger") {
-      newUser.rides = 100;
+      newUser.rides = 10;
     } else if (newUser.userType === "driver") {
       newUser.rides = 0;
     }
